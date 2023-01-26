@@ -1,13 +1,11 @@
 package com.szastarek.acl.authority
 
 import com.szastarek.acl.Feature
-import kotlinx.serialization.Serializable
 
 sealed interface Authority
 
 data class FeatureAccessAuthority(val feature: Feature) : Authority
 
-@Serializable
 data class EntityAccessAuthority<T : AclResource>(
     val aclResourceIdentifier: AclResourceIdentifier,
     val scopes: List<AuthorityScope<T>>

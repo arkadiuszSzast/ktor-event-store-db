@@ -1,8 +1,5 @@
 package com.szastarek.acl.authority
 
-import com.szastarek.acl.AccountContext
-import kotlin.reflect.KClass
-
 class EntityAccessAuthorityScopeBuilder<T : AclResource>(private val aclResourceIdentifier: AclResourceIdentifier) {
     private var scopes: MutableList<AuthorityScope<T>> = mutableListOf()
 
@@ -16,6 +13,10 @@ class EntityAccessAuthorityScopeBuilder<T : AclResource>(private val aclResource
 
     fun updateScope(vararg predicates: AclResourcePredicate<T>) {
         scope(AuthorityLevel.Update, predicates.toList())
+    }
+
+    fun deleteScope(vararg predicates: AclResourcePredicate<T>) {
+        scope(AuthorityLevel.Delete, predicates.toList())
     }
 
     fun manageScope(vararg predicates: AclResourcePredicate<T>) {

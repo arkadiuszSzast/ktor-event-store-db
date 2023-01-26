@@ -1,11 +1,9 @@
 package com.szastarek.acl.authority
 
-import com.szastarek.acl.AccountId
-import com.szastarek.acl.AccountIdProvider
-import com.szastarek.acl.BelongsToAccount
 import com.szastarek.acl.Feature
+import com.szastarek.acl.utils.Cat
+import com.szastarek.acl.utils.Dog
 import io.kotest.core.spec.style.DescribeSpec
-import kotlinx.serialization.Serializable
 import strikt.api.expectThat
 import strikt.assertions.containsExactlyInAnyOrder
 
@@ -65,22 +63,3 @@ class AuthoritiesProviderTest : DescribeSpec({
         }
     }
 })
-
-@Serializable
-data class Dog(val name: String, override val accountId: AccountId) : AclResource, BelongsToAccount {
-    override val aclResourceIdentifier: AclResourceIdentifier
-        get() = Dog.aclResourceIdentifier
-
-    companion object {
-        val aclResourceIdentifier = AclResourceIdentifier("Dog")
-    }
-}
-
-data class Cat(val name: String, val age: Int) : AclResource {
-    override val aclResourceIdentifier: AclResourceIdentifier
-        get() = Cat.aclResourceIdentifier
-
-    companion object {
-        val aclResourceIdentifier = AclResourceIdentifier("Cat")
-    }
-}

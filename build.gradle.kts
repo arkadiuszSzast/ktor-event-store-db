@@ -15,9 +15,21 @@ version = "0.0.1"
 
 repositories {
     mavenCentral()
+    maven("https://maven.pkg.github.com/arkadiuszSzast") {
+        credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 publishing {
+    publications {
+        create<MavenPublication>("default") {
+            from(components["java"])
+        }
+    }
+
     repositories {
         maven {
             name = "GitHubPackages"

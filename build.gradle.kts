@@ -7,7 +7,7 @@ val kotlin_reflect: String by project
 plugins {
     kotlin("jvm") version "1.8.0"
     `java-test-fixtures`
-    `maven-publish`
+    application
 }
 
 group = "com.szastarek"
@@ -15,6 +15,7 @@ version = "0.0.1"
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {

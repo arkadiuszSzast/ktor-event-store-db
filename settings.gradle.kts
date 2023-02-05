@@ -1,1 +1,1 @@
-rootProject.name = "kotlin-acl"
+rootProject.name = "kotlin-event-store-db"

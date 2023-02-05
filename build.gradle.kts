@@ -1,17 +1,14 @@
-val kotest_version: String by project
-val strikt_version: String by project
-val kotlin_logging_version: String by project
-val coroutines_version: String by project
-val kotlin_reflect: String by project
+val event_store_client: String by project
+val ktor_version: String by project
+val grpc_api: String by project
 
 plugins {
     kotlin("jvm") version "1.8.0"
-    `java-test-fixtures`
     `maven-publish`
 }
 
 group = "com.szastarek"
-version = "0.0.2"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -25,15 +22,15 @@ repositories {
 
 publishing {
     publications {
-        create<MavenPublication>("default") {
-            from(components["java"])
+        create<MavenPublication>("kotlin-event-store-db") {
+            from(components["kotlin"])
         }
     }
 
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/arkadiuszSzast/acl")
+            url = uri("https://maven.pkg.github.com/arkadiuszSzast/ktor-event-store-db")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
@@ -43,10 +40,8 @@ publishing {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_reflect")
-    implementation("io.github.microutils:kotlin-logging-jvm:$kotlin_logging_version")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
-
-    testImplementation("io.kotest:kotest-runner-junit5:$kotest_version")
-    testImplementation("io.strikt:strikt-core:$strikt_version")
+    implementation(kotlin("stdlib"))
+    api("com.eventstore:db-client-java:$event_store_client")
+    implementation("io.ktor:ktor-server-core:$ktor_version")
+    implementation("io.grpc:grpc-api:$grpc_api")
 }

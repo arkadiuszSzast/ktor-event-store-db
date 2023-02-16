@@ -26,11 +26,8 @@ import com.eventstore.dbclient.WriteResult
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationPlugin
 import io.ktor.server.application.ApplicationStopPreparing
 import io.ktor.server.application.BaseApplicationPlugin
-import io.ktor.server.application.EventDefinition
-import io.ktor.server.application.PluginInstance
 import io.ktor.server.application.log
 import io.ktor.util.AttributeKey
 import java.util.UUID
@@ -88,7 +85,7 @@ interface EventStoreDB : CoroutineScope {
         direction: Direction = Direction.Forwards
     ): ReadResult
 
-    suspend fun readAllEventCategory(
+    suspend fun readAllByEventCategory(
         eventCategory: EventCategory,
         maxCount: Long = Long.MAX_VALUE,
         direction: Direction = Direction.Forwards
@@ -196,14 +193,14 @@ class EventStoreDBPlugin(private val config: EventStoreDB.Configuration) : Event
         client.readAll(ReadAllOptions.get().maxCount(maxCount).direction(direction)).await()
 
     override suspend fun readAllByEventType(eventType: EventType, maxCount: Long, direction: Direction): ReadResult =
-        readStream(StreamName("\$et-$eventType"), maxCount, direction)
+        readStream(StreamName("\$et-${eventType.value}"), maxCount, direction)
 
-    override suspend fun readAllEventCategory(
+    override suspend fun readAllByEventCategory(
         eventCategory: EventCategory,
         maxCount: Long,
         direction: Direction
     ): ReadResult =
-        readStream(StreamName("\$ce-$eventCategory"), maxCount, direction)
+        readStream(StreamName("\$ce-${eventCategory.value}"), maxCount, direction)
 
     override suspend fun subscribeByCorrelationId(id: UUID, listener: EventListener): Subscription =
         subscribeToStream(StreamName("\$bc-$id"), listener)

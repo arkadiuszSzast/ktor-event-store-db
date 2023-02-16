@@ -81,6 +81,19 @@ interface EventStoreDB : CoroutineScope {
     ): ReadResult
 
     suspend fun readAll(maxCount: Long = Long.MAX_VALUE, direction: Direction = Direction.Forwards): ReadResult
+
+    suspend fun readAllByEventType(
+        eventType: EventType,
+        maxCount: Long = Long.MAX_VALUE,
+        direction: Direction = Direction.Forwards
+    ): ReadResult
+
+    suspend fun readAllEventCategory(
+        eventCategory: EventCategory,
+        maxCount: Long = Long.MAX_VALUE,
+        direction: Direction = Direction.Forwards
+    ): ReadResult
+
     suspend fun subscribeByCorrelationId(id: UUID, listener: EventListener): Subscription
     suspend fun subscribeToStream(streamName: StreamName, listener: EventListener): Subscription
     suspend fun subscribeToStream(
@@ -181,6 +194,16 @@ class EventStoreDBPlugin(private val config: EventStoreDB.Configuration) : Event
 
     override suspend fun readAll(maxCount: Long, direction: Direction): ReadResult =
         client.readAll(ReadAllOptions.get().maxCount(maxCount).direction(direction)).await()
+
+    override suspend fun readAllByEventType(eventType: EventType, maxCount: Long, direction: Direction): ReadResult =
+        readStream(StreamName("\$et-$eventType"), maxCount, direction)
+
+    override suspend fun readAllEventCategory(
+        eventCategory: EventCategory,
+        maxCount: Long,
+        direction: Direction
+    ): ReadResult =
+        readStream(StreamName("\$ce-$eventCategory"), maxCount, direction)
 
     override suspend fun subscribeByCorrelationId(id: UUID, listener: EventListener): Subscription =
         subscribeToStream(StreamName("\$bc-$id"), listener)

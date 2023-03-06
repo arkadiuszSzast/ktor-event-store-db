@@ -70,31 +70,31 @@ interface EventStoreDB : CoroutineScope {
     ): WriteResult
 
     suspend fun readByCorrelationId(
-        id: UUID, maxCount: Long = Long.MAX_VALUE, direction: Direction = Direction.Forwards
+        id: UUID, maxCount: Int= Int.MAX_VALUE, direction: Direction = Direction.Forwards
     ): ReadResult
 
     suspend fun readStream(
         streamName: StreamName,
-        maxCount: Long = Long.MAX_VALUE,
+        maxCount: Int= Int.MAX_VALUE,
         direction: Direction = Direction.Forwards,
         resolveLinksTo: Boolean = true
     ): ReadResult
 
     suspend fun readAll(
-        maxCount: Long = Long.MAX_VALUE,
+        maxCount: Int= Int.MAX_VALUE,
         direction: Direction = Direction.Forwards,
         resolveLinksTo: Boolean = true
     ): ReadResult
 
     suspend fun readAllByEventType(
         eventType: EventType,
-        maxCount: Long = Long.MAX_VALUE,
+        maxCount: Int= Int.MAX_VALUE,
         direction: Direction = Direction.Forwards
     ): ReadResult
 
     suspend fun readAllByEventCategory(
         eventCategory: EventCategory,
-        maxCount: Long = Long.MAX_VALUE,
+        maxCount: Int= Int.MAX_VALUE,
         direction: Direction = Direction.Forwards
     ): ReadResult
 
@@ -190,30 +190,30 @@ class EventStoreDBPlugin(private val config: EventStoreDB.Configuration) : Event
         streamName: StreamName, eventData: EventData, options: AppendToStreamOptions
     ): WriteResult = client.appendToStream(streamName.value, options, eventData).await()
 
-    override suspend fun readByCorrelationId(id: UUID, maxCount: Long, direction: Direction): ReadResult =
+    override suspend fun readByCorrelationId(id: UUID, maxCount: Int, direction: Direction): ReadResult =
         readStream(StreamName("\$bc-$id"), maxCount, direction)
 
     override suspend fun readStream(
         streamName: StreamName,
-        maxCount: Long,
+        maxCount: Int,
         direction: Direction,
         resolveLinksTo: Boolean
     ): ReadResult =
         client.readStream(
             streamName.value,
-            ReadStreamOptions.get().resolveLinkTos(resolveLinksTo).maxCount(maxCount).direction(direction)
+            ReadStreamOptions.get().resolveLinkTos(resolveLinksTo).maxCount(maxCount.toLong()).direction(direction)
         ).await()
 
-    override suspend fun readAll(maxCount: Long, direction: Direction, resolveLinksTo: Boolean): ReadResult =
-        client.readAll(ReadAllOptions.get().resolveLinkTos(resolveLinksTo).maxCount(maxCount).direction(direction))
+    override suspend fun readAll(maxCount: Int, direction: Direction, resolveLinksTo: Boolean): ReadResult =
+        client.readAll(ReadAllOptions.get().resolveLinkTos(resolveLinksTo).maxCount(maxCount.toLong()).direction(direction))
             .await()
 
-    override suspend fun readAllByEventType(eventType: EventType, maxCount: Long, direction: Direction): ReadResult =
+    override suspend fun readAllByEventType(eventType: EventType, maxCount: Int, direction: Direction): ReadResult =
         readStream(StreamName("\$et-${eventType.value}"), maxCount, direction, resolveLinksTo = true)
 
     override suspend fun readAllByEventCategory(
         eventCategory: EventCategory,
-        maxCount: Long,
+        maxCount: Int,
         direction: Direction
     ): ReadResult =
         readStream(StreamName("\$ce-${eventCategory.value}"), maxCount, direction, resolveLinksTo = true)
